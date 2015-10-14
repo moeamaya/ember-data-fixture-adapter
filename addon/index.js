@@ -159,6 +159,30 @@ export default DS.Adapter.extend({
   },
 
   /**
+    @method findRecord
+    @param {DS.Store} store
+    @param {subclass of DS.Model} typeClass
+    @param {String} id
+    @param {DS.Snapshot} snapshot
+    @return {Promise} promise
+  */
+  findRecord(store, typeClass, id/*, snapshot*/) {
+    var fixtures = this.fixturesForType(typeClass);
+    var fixture;
+
+    Ember.assert(`Unable to find fixtures for model type ${typeClass.toString()}. If you're defining your fixtures using 'Model.FIXTURES = ...'', please change it to 'Model.reopenClass({ FIXTURES: ... })'.`, fixtures);
+
+    if (fixtures) {
+      fixture = Ember.A(fixtures).findBy('id', id);
+    }
+
+    if (fixture) {
+      return this.simulateRemoteCall(() => fixture);
+    }
+  },
+
+
+  /**
     @method findMany
     @param {DS.Store} store
     @param {subclass of DS.Model} typeClass
